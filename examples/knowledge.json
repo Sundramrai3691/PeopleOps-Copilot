@@ -1,0 +1,16 @@
+{
+  "documents": [
+    {
+      "id": "order-amount", "database_id": "demo",
+      "title": "Order amount and revenue",
+      "text": "Synthetic example: orders.amount stores integer cents. Total revenue here means SUM(amount) across orders. Refunds, taxes and recognized revenue are not defined by this example.",
+      "tables": ["orders"], "source": "synthetic-commerce/metrics", "version": "1"
+    },
+    {
+      "id": "order-lookup", "database_id": "demo",
+      "title": "Look up an order amount",
+      "text": "Example: SELECT amount FROM orders WHERE id = 1. Replace 1 only with the identifier supplied by the user; never infer an identifier.",
+      "tables": ["orders"], "source": "synthetic-commerce/queries", "version": "1"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "version":"synthetic-retrieval-v1",
+  "scope":"Developer-authored retrieval smoke; not SQL execution or independent held-out evaluation. Documents illustrate business terminology, not executable schemas.",
+  "queries":[
+    {"question":"net sales refunded amounts","relevant_id":"net_sales"},
+    {"question":"available inventory active reservations","relevant_id":"available_stock"},
+    {"question":"unique purchasers customer identifiers","relevant_id":"customer_count"},
+    {"question":"monthly reporting UTC interval","relevant_id":"monthly_window"},
+    {"question":"late delivery promised timestamp","relevant_id":"shipping_delay"},
+    {"question":"first human response staff reply","relevant_id":"response_time"},
+    {"question":"unpaid invoice balance settled payments","relevant_id":"unpaid_balance"},
+    {"question":"reopened tickets closed event","relevant_id":"repeat_open"},
+    {"question":"How much money did we really earn after reimbursements?","relevant_id":"net_sales"},
+    {"question":"How many units can we still sell after setting goods aside?","relevant_id":"available_stock"},
+    {"question":"Should a shopper making several purchases be counted repeatedly?","relevant_id":"customer_count"},
+    {"question":"Which timezone and end boundary apply to a calendar report?","relevant_id":"monthly_window"},
+    {"question":"Does an undelivered parcel qualify as a tardy completed shipment?","relevant_id":"shipping_delay"},
+    {"question":"Do chatbot acknowledgements stop the support waiting clock?","relevant_id":"response_time"},
+    {"question":"Can an overpaid bill offset the money owed on a different bill?","relevant_id":"unpaid_balance"},
+    {"question":"Does the initial opening count as a case being opened again?","relevant_id":"repeat_open"}
+  ]
+}

@@ -1,0 +1,46 @@
+name: peopleops-copilot
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: peopleops
+      POSTGRES_USER: peopleops
+      POSTGRES_PASSWORD: ${PEOPLEOPS_DB_PASSWORD:-local-demo-password}
+    volumes:
+      - peopleops-jobs:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U peopleops -d peopleops"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  peopleops-api:
+    build: .
+    environment:
+      SQL_AGENT_DATABASE_URL: postgresql://peopleops:${PEOPLEOPS_DB_PASSWORD:-local-demo-password}@postgres:5432/peopleops
+      SQL_AGENT_API_KEYS: '${PEOPLEOPS_API_KEYS:-{"employee-e002":{"name":"E002","role":"employee"},"manager-e001":{"name":"E001","role":"manager"},"hr-local":{"name":"hr","role":"hr"},"admin-local":{"name":"admin","role":"admin"}}}'
+      PEOPLEOPS_DATABASE_URL: postgresql://peopleops:${PEOPLEOPS_DB_PASSWORD:-local-demo-password}@postgres:5432/peopleops
+      PEOPLEOPS_DATABASE: /data/peopleops.sqlite
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+  peopleops-worker:
+    build: .
+    command: ["peopleops-copilot-worker", "--poll-seconds", "0.25"]
+    environment:
+      SQL_AGENT_DATABASE_URL: postgresql://peopleops:${PEOPLEOPS_DB_PASSWORD:-local-demo-password}@postgres:5432/peopleops
+      SQL_AGENT_PLANNER_BASE_URL: ${SQL_AGENT_PLANNER_BASE_URL:-}
+      SQL_AGENT_PLANNER_MODEL: ${SQL_AGENT_PLANNER_MODEL:-}
+      SQL_AGENT_PLANNER_PROVIDER: ${SQL_AGENT_PLANNER_PROVIDER:-ollama}
+      SQL_AGENT_PLANNER_API_KEY: ${SQL_AGENT_PLANNER_API_KEY:-}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      disable: true
+volumes:
+  peopleops-jobs:

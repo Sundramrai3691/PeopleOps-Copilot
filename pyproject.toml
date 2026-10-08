@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "peopleops-copilot"
+version = "1.0.0"
+description = "Explainable employee operations agent for safe HR analytics, policy retrieval, and approval-gated actions"
+requires-python = ">=3.10"
+dependencies = ["sqlglot>=28.10.1,<29", "langgraph>=1.2.11,<2", "langgraph-checkpoint-sqlite>=3.1.1,<4"]
+
+[project.optional-dependencies]
+data = ["pyarrow>=16,<24"]
+api = ["fastapi>=0.115,<1", "uvicorn>=0.30,<1", "httpx>=0.28,<1"]
+prod = ["psycopg[binary]>=3.2,<4"]
+rag = ["sentence-transformers>=3,<6"]
+dev = ["pytest>=8", "fastapi>=0.115,<1", "httpx>=0.28,<1", "uvicorn>=0.30,<1"]
+
+[project.scripts]
+peopleops-copilot = "sql_agent.cli:main"
+peopleops-copilot-mcp = "sql_agent.mcp_server:main"
+peopleops-copilot-worker = "sql_agent.worker:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = [".", "src"]

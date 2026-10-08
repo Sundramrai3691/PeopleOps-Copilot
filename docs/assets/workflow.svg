@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="520" viewBox="0 0 1100 520" role="img" aria-labelledby="title desc">
+  <title id="title">PeopleOps Copilot workflow</title>
+  <desc id="desc">FastAPI routes employee questions to policy retrieval, bounded analytics, and authorized MCP employee tools. Leave changes wait for manager approval and are recorded with an audit event.</desc>
+  <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#466273"/></marker><style>
+    text{font-family:Inter,Segoe UI,Arial,sans-serif;fill:#183342}.title{font-size:27px;font-weight:700}.label{font-size:17px;font-weight:650}.small{font-size:14px}.box{fill:#fff;stroke:#6b8795;stroke-width:2}.policy{fill:#edf7f2;stroke:#47856c}.analytics{fill:#eff4fb;stroke:#5279a6}.action{fill:#fff5e8;stroke:#ad7932}.arrow{stroke:#466273;stroke-width:2.3;fill:none;marker-end:url(#arrow)}
+  </style></defs>
+  <rect width="1100" height="520" fill="#f5f8fa"/>
+  <text x="42" y="48" class="title">PeopleOps Copilot · Explainable employee operations</text>
+  <rect x="430" y="80" width="240" height="58" rx="12" class="box"/><text x="550" y="116" text-anchor="middle" class="label">Employee question · FastAPI</text>
+  <rect x="430" y="172" width="240" height="58" rx="12" class="box"/><text x="550" y="208" text-anchor="middle" class="label">LangGraph workflow</text>
+  <path d="M550 138v34" class="arrow"/>
+  <rect x="60" y="286" width="270" height="100" rx="12" class="policy"/><text x="195" y="321" text-anchor="middle" class="label">Policy retrieval</text><text x="195" y="348" text-anchor="middle" class="small">BM25 · source · section · evidence</text>
+  <rect x="415" y="286" width="270" height="100" rx="12" class="analytics"/><text x="550" y="321" text-anchor="middle" class="label">Workforce analytics</text><text x="550" y="348" text-anchor="middle" class="small">Fixed read-only SQL · PostgreSQL</text>
+  <rect x="770" y="286" width="270" height="100" rx="12" class="action"/><text x="905" y="321" text-anchor="middle" class="label">MCP employee tools</text><text x="905" y="348" text-anchor="middle" class="small">Role guard · profile · leave · attendance</text>
+  <path d="M480 230 240 286M550 230v56M620 230l240 56" class="arrow"/>
+  <rect x="720" y="430" width="210" height="56" rx="12" class="action"/><text x="825" y="465" text-anchor="middle" class="label">Manager approval</text>
+  <rect x="955" y="430" width="110" height="56" rx="12" class="box"/><text x="1010" y="465" text-anchor="middle" class="small">Audit event</text>
+  <path d="M905 386v44M930 458h25" class="arrow"/>
+  <text x="60" y="456" class="small">Sensitive leave writes pause at approval; employee data stays role-scoped.</text>
+</svg>

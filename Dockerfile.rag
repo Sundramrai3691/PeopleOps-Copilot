@@ -1,0 +1,12 @@
+FROM python:3.11-slim
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 \
+    HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 TOKENIZERS_PARALLELISM=false \
+    OMP_NUM_THREADS=2 MKL_NUM_THREADS=2
+WORKDIR /app
+# CPU-only retrieval; the generation endpoint is configured independently.
+RUN pip install --no-cache-dir torch==2.4.0+cpu --index-url https://download.pytorch.org/whl/cpu
+COPY pyproject.toml README.md ./
+COPY src ./src
+COPY data ./data
+RUN pip install --no-cache-dir '.[api,prod]' sentence-transformers==3.0.1 transformers==4.47.0 'numpy<2'
+CMD ["sql-agent-worker", "--poll-seconds", "0.1"]

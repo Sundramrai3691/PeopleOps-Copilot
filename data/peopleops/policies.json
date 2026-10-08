@@ -1,0 +1,14 @@
+{
+  "effective_date": "2026-01-01",
+  "policies": [
+    {"policy_id":"POL-LEAVE","title":"Leave Policy","section":"Annual Leave","text":"Employees accrue 18 days of annual leave per calendar year. New employees receive a prorated balance based on their start date. Vacation request notice: submit annual leave requests at least five working days ahead. Managers approve team requests; People Operations handles escalations."},
+    {"policy_id":"POL-LEAVE","title":"Leave Policy","section":"Sick Leave","text":"Employees receive 10 paid sick days each year. Notify your manager before your scheduled start when possible. Medical documentation may be requested after three consecutive working days."},
+    {"policy_id":"POL-ATTEND","title":"Attendance Policy","section":"Working Hours","text":"Standard working hours are 40 hours per week. Record attendance on each scheduled workday. Flexible schedules require manager agreement."},
+    {"policy_id":"POL-REMOTE","title":"Remote Work Policy","section":"Eligibility","text":"Eligible roles may work remotely up to three days each week with manager approval. Teams set shared in-office days. Protect company information when working away from an office."},
+    {"policy_id":"POL-BENEFITS","title":"Benefits Policy","section":"Health Benefits","text":"Employees scheduled at least 30 hours weekly may enroll in health coverage. Enrollment begins on the first day of the month after 30 days of employment."},
+    {"policy_id":"POL-PROMOTION","title":"Promotion Policy","section":"Review","text":"Promotion decisions consider sustained role performance, demonstrated skills, and organizational need. Managers document evidence and discuss proposals with People Operations."},
+    {"policy_id":"POL-EXPENSE","title":"Expense Policy","section":"Reimbursement","text":"Pre-approved business travel meals are reimbursable up to 60 USD per person per day. Submit itemized receipts within 30 days. Personal expenses are not reimbursed."},
+    {"policy_id":"POL-DATA","title":"Data Access Policy","section":"Employee Records","text":"Access employee records only for an authorized work purpose. Managers may view direct reports; People Operations may access records for approved HR duties. Do not export or disclose personal data without authorization."},
+    {"policy_id":"POL-CONDUCT","title":"Employee Conduct Policy","section":"Respectful Workplace","text":"Employees are expected to maintain a respectful workplace. Report safety, discrimination, harassment, or misconduct concerns to People Operations through established internal channels. Misconduct should be reported to People Operations."}
+  ]
+}

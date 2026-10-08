@@ -1,0 +1,35 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+dist/
+build/
+*.egg-info/
+.env
+.env.*
+!.env.example
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+node_modules/
+
+# Models, runtime state, and generated research outputs are never committed.
+models/
+runtime/
+outputs/research/
+outputs/harbor/
+outputs/portfolio/
+outputs/validation/
+outputs/**/*.pt
+outputs/**/*.pth
+outputs/**/*.ckpt
+outputs/**/*.safetensors
+
+# Upstream datasets and cloned third-party repositories are fetched separately.
+third_party/
+
+# Medical images and derived manifests stay local unless redistribution rights
+# have been reviewed explicitly.
+data/processed/
+data/local/

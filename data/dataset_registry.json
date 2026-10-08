@@ -1,0 +1,168 @@
+{
+  "checked_at": "2026-09-06",
+  "benchmark_inventories": [
+    {
+      "source": "https://huggingface.co/datasets/birdsql/bird_mini_dev",
+      "revision": "f65faf4ae3b638c1fa6df1d3370c8d92c8366301",
+      "license": "CC-BY-SA-4.0",
+      "sha256": "88ceb0710163cae46a256ecea8f0a8c98286599530b60587fda5c3cfe57d45d2",
+      "tasks": 500,
+      "databases": {
+        "debit_card_specializing": 30,
+        "student_club": 48,
+        "thrombosis_prediction": 50,
+        "european_football_2": 51,
+        "formula_1": 66,
+        "superhero": 52,
+        "codebase_community": 49,
+        "card_games": 52,
+        "toxicology": 40,
+        "california_schools": 30,
+        "financial": 32
+      },
+      "difficulty": {
+        "simple": 148,
+        "moderate": 250,
+        "challenging": 102
+      },
+      "status": "All 500 questions executed against all eleven canonical databases. See latest_bird_full_evaluation; five reference limit errors retained in denominator."
+    },
+    {
+      "source": "https://huggingface.co/datasets/birdsql/bird-critic-1.0-sqlite",
+      "revision": "af2b1c3",
+      "license": "CC-BY-SA-4.0",
+      "sha256": "4abb18afbc7c1f8e9c566d04707ebbdc8508247924ced01b927ef716393fd468",
+      "tasks": 500,
+      "categories": {
+        "Query": 284,
+        "Management": 75,
+        "Personalization": 141
+      },
+      "databases": {
+        "codebase_community": 12,
+        "financial": 44,
+        "european_football_2": 69,
+        "california_schools": 24,
+        "formula_1": 44,
+        "card_games": 51,
+        "superhero": 40,
+        "thrombosis_prediction": 32,
+        "toxicology": 64,
+        "debit_card_specializing": 37,
+        "student_club": 42,
+        "erolp": 28,
+        "esophageal": 8,
+        "global_atlas": 3,
+        "spotify": 2
+      },
+      "has_preprocess": 203,
+      "multi_statement_issue": 19,
+      "fields": [
+        "dialect",
+        "version",
+        "instance_id",
+        "db_id",
+        "query",
+        "issue_sql",
+        "preprocess_sql",
+        "clean_up_sql",
+        "category"
+      ],
+      "status": "Inventory only. No gold SQL or official per-case tests in this task file; no accuracy score. Medical domains excluded from planned project subset; no subset selected based on model success."
+    },
+    {
+      "source": "https://huggingface.co/datasets/birdsql/mini-interact",
+      "revision": "088b3787303e69129e395a9f712902670339ef72",
+      "sha256": "14084a137547f6f397bd6d3913dcaafd9fd19d9213f6c97bd704842877060fc3",
+      "tasks": 300,
+      "license": "CC-BY-SA-4.0",
+      "status": "Public questions downloaded; all 300 lack gold SQL and tests. No benchmark execution or score.",
+      "availability_audit": "outputs/validation/agent_reliability_v1/mini_interact_availability.json"
+    }
+  ],
+  "real_data_manifest": "data/local/tlc_2025_01/manifest.json",
+  "report": "docs/DATASET_VALIDATION.md",
+  "latest_combined_experiment": {
+    "report": "docs/COMBINED_EXPERIMENT.md",
+    "summary": "outputs/validation/combined_v1/summary.json",
+    "external_bird_subset": 30,
+    "single_ex_matches": 10,
+    "bounded_ex_matches": 10,
+    "canonical_databases_downloaded": [
+      "california_schools",
+      "financial",
+      "student_club"
+    ],
+    "full_benchmark_score": false
+  },
+  "latest_bird_extension": {
+    "report": "docs/BIRD_110_VALIDATION.md",
+    "summary": "outputs/validation/bird_110_v1/summary.json",
+    "all_cases_in_three_databases": 110,
+    "single_ex_matches": 33,
+    "bounded_ex_matches": 35,
+    "additional_cases": 80,
+    "additional_single_matches": 23,
+    "additional_bounded_matches": 25,
+    "reference_errors": 0,
+    "production_source_unchanged": true,
+    "full_500_case_benchmark": false
+  },
+  "latest_bird_full_evaluation": {
+    "report": "docs/BIRD_500_RERUN_V2.md",
+    "summary": "outputs/validation/bird_500_v2/summary.json",
+    "coverage_audit": "outputs/validation/bird_500_v2/coverage_comparison.json",
+    "questions": 500,
+    "single_ex_matches": 135,
+    "bounded_ex_matches": 140,
+    "new_questions": 390,
+    "new_single_matches": 102,
+    "new_bounded_matches": 105,
+    "reference_errors": 5,
+    "production_source_unchanged": true,
+    "full_question_coverage": true,
+    "official_leaderboard_score": false,
+    "rerun": true,
+    "model_calls": 604
+  },
+  "latest_semantic_screening": {
+    "report": "docs/BIRD_500_RERUN_V2.md",
+    "summary": "outputs/validation/bird_semantic_gate_v2/summary.json",
+    "questions": 500,
+    "design": "screen of freshly regenerated v2 candidates; no semantic repair after disagreement",
+    "wrong_candidates_before": 217,
+    "wrong_candidates_after": 75,
+    "correct_before": 140,
+    "correct_retained": 96,
+    "unknown_agreement": 1,
+    "live_model_calls": 358,
+    "general_auto_release": false,
+    "live_fault_recovery_summary": "outputs/validation/live_semantic_repair_v2/summary.json",
+    "live_injected_faults": 6,
+    "live_faults_recovered": 6,
+    "regression_passed": 89
+  },
+  "latest_agent_reliability": {
+    "report": "docs/MODEL_RECOVERY_FIX.md",
+    "summary": "outputs/validation/agent_reliability_v2/summary.json",
+    "comparison": "outputs/validation/agent_reliability_v2/coverage_comparison.json",
+    "episodes": 108,
+    "scope": "Known synthetic regression fixtures; actual JobPipeline; injected faults; no production readiness claim",
+    "normal_answerable_candidate_correct": 45,
+    "normal_answerable_controller_success": 45,
+    "normal_answerable_runs": 45,
+    "availability_fault_recovered": 27,
+    "automatic_releases": 0,
+    "regression_passed": 113
+  },
+  "latest_function_policy_replay": {
+    "report": "docs/SQL_FUNCTION_POLICY_FIX.md",
+    "summary": "outputs/validation/bird_function_replay_v1/summary.json",
+    "n": 500,
+    "design": "Frozen proposal replay, zero model calls, no semantic checker",
+    "before_correct": 140,
+    "after_correct": 149,
+    "new_wrong_retained": 29,
+    "regression_passed": 121
+  }
+}

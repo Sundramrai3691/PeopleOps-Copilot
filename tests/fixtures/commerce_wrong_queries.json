@@ -1,0 +1,7 @@
+{
+  "source": "Extracted SQL-only regression inputs from local commerce_v1_prompt_v3 synthetic runs; no runtime logs or database rows.",
+  "queries": {
+    "customer_net": "SELECT customers.name, COALESCE(SUM(orders.gross_cents) - SUM(refunds.amount_cents), 0) AS net_cents\nFROM customers\nLEFT JOIN orders\nON customers.customer_id = orders.customer_id\nAND orders.status = 'paid'\nAND orders.ordered_at >= '2026-01-01'\nAND orders.ordered_at < '2026-02-01'\nLEFT JOIN refunds\nON orders.order_id = refunds.order_id\nGROUP BY customers.customer_id\nORDER BY customers.customer_id;",
+    "empty_cohort": "SELECT COALESCE(SUM(orders.gross_cents), 0) AS gross_cents FROM orders WHERE orders.status = 'paid' AND orders.ordered_at >= '2026-01-01' AND orders.ordered_at < '2026-02-01'"
+  }
+}

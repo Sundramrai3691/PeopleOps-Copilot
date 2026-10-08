@@ -1,0 +1,31 @@
+{
+  "benchmark": "sql_repair_v3_confirmatory",
+  "registered_at": "2026-08-27",
+  "case_suite_sha256": "1811f14e0372cbb1e88f526f86fa89c64f9e016f3057f29d0ae6d537e5459619",
+  "design": {
+    "cases": 108,
+    "schemas": 6,
+    "failure_family_clusters": 18,
+    "actions": {
+      "KEEP": 36,
+      "REPAIR": 36,
+      "STOP": 36
+    },
+    "schemas_unseen_in_v2": true,
+    "failure_families_unseen_in_v2": true
+  },
+  "frozen_components": [
+    "planner prompt",
+    "policy",
+    "verifier",
+    "evaluation semantics"
+  ],
+  "primary_comparison": "policy_verifier versus llm_only",
+  "primary_metrics": [
+    "task success count",
+    "unsafe actions executed",
+    "incorrect outputs accepted",
+    "paired failure-family-cluster bootstrap 95% confidence interval"
+  ],
+  "claim_rule": "Report the complete result regardless of direction; do not tune policy or verifier on v3 outcomes."
+}

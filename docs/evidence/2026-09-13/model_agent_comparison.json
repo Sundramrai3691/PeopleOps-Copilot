@@ -1,0 +1,22 @@
+{
+  "date": "2026-09-13",
+  "dataset": "official BIRD Mini-Dev",
+  "tasks": 500,
+  "grading": "execution-result set equality; errors count against all 500",
+  "sql_agent": {
+    "workflow": "full schema, no RAG, bounded execution-error repair, advisory Qwen2.5-Coder-7B verifier",
+    "results": {
+      "qwen3:4b": {"correct": 196, "accuracy": 0.392, "tokens_per_correct": 6762.816326530612, "p95_seconds": 3.657954497030005},
+      "gemma3:4b": {"correct": 108, "accuracy": 0.216, "tokens_per_correct": 13252.777777777777, "p95_seconds": 4.114025196991861},
+      "qwen3:0.6b": {"correct": 37, "accuracy": 0.074, "tokens_per_correct": 33897.62162162162, "p95_seconds": 5.200120420893654}
+    }
+  },
+  "pv_sql": {
+    "upstream_commit": "9f2bcd9a16ec1029649222851bd9e08a2af3e2c6",
+    "results": {
+      "qwen3:4b": {"correct": 180, "accuracy": 0.36, "tokens_per_correct": 19024.71111111111, "p95_seconds": 8.670344859128818, "gains": 53, "losses": 69},
+      "gemma3:4b": {"correct": 110, "accuracy": 0.22, "tokens_per_correct": 32021.78181818182, "p95_seconds": 12.79691908787936, "gains": 47, "losses": 45},
+      "qwen3:0.6b": {"correct": 34, "accuracy": 0.068, "tokens_per_correct": 44624.705882352944, "p95_seconds": 5.448276811046526, "gains": 17, "losses": 20}
+    }
+  }
+}
