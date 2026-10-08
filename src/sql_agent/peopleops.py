@@ -43,6 +43,22 @@ class _PostgresConnection:
         self.connection.commit()
 
 
+class _SQLiteConnection:
+    """Match PostgreSQL's close-on-context-exit behavior on every platform."""
+    def __init__(self, connection):
+        self.connection = connection
+    def __enter__(self):
+        self.connection.__enter__()
+        return self
+    def __exit__(self, *args):
+        try:
+            return self.connection.__exit__(*args)
+        finally:
+            self.connection.close()
+    def __getattr__(self, name):
+        return getattr(self.connection, name)
+
+
 class PeopleOpsService:
     def __init__(self, database: str | None = None):
         self.database = database or os.getenv("PEOPLEOPS_DATABASE", "runtime/peopleops.sqlite")
@@ -62,7 +78,7 @@ class PeopleOpsService:
         db = sqlite3.connect(self.database, timeout=10)
         db.row_factory = sqlite3.Row
         db.execute("PRAGMA foreign_keys=ON")
-        return db
+        return _SQLiteConnection(db)
 
     def _initialize(self):
         with self.connect() as db:
