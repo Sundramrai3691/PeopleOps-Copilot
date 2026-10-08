@@ -34,6 +34,10 @@ def create_app(jobs=None, registry=None, authorizer=None, mutations=None):
         model_config = ConfigDict(extra="forbid")
         question: str = Field(min_length=3, max_length=2000)
 
+    class AgentQuestion(BaseModel):
+        model_config = ConfigDict(extra="forbid")
+        question: str = Field(min_length=3, max_length=2000)
+
     class HeadcountQuery(BaseModel):
         model_config = ConfigDict(extra="forbid")
         department: str | None = Field(default=None, max_length=100)
@@ -207,6 +211,31 @@ def create_app(jobs=None, registry=None, authorizer=None, mutations=None):
     def policy_query(payload: PolicyQuestion, x_api_key: str | None = Header(default=None), peopleops_session: str | None = Cookie(default=None)):
         authorize(x_api_key, "employee", peopleops_session)
         return peopleops.ask_policy(payload.question)
+
+    @app.post("/agent/query")
+    def agent_query(payload: AgentQuestion, x_api_key: str | None = Header(default=None), peopleops_session: str | None = Cookie(default=None)):
+        principal = authorize(x_api_key, "employee", peopleops_session)
+        import re
+        question = payload.question
+        codes = re.findall(r"\bE[0-9]{3}\b", question.upper())
+        normalized = question.casefold()
+        try:
+            if codes and any(term in normalized for term in ("balance", "leave days")):
+                return {**peopleops.get_leave_balance(codes[0],principal.name,principal.role),"tools_used":["get_leave_balance"],"authorization":"allowed"}
+            if codes and any(term in normalized for term in ("profile", "who is", "employee details")):
+                return {**peopleops.get_employee_profile(codes[0],principal.name,principal.role),"tools_used":["get_employee_profile"],"authorization":"allowed"}
+            if any(term in normalized for term in ("policy", "leave", "remote", "reimbursement", "work week", "promotion", "benefit", "misconduct")):
+                result = peopleops.ask_policy(question)
+                return {**result, "tools_used":["ask_hr_policy"],"authorization":"allowed"}
+            if any(term in normalized for term in ("headcount", "how many employees", "count employees", "department")):
+                department = next((name for name in ("Engineering","People","Finance","Operations","Sales","Customer Support") if name.casefold() in normalized), None)
+                result = peopleops.get_team_headcount(department, principal.name, principal.role)
+                return {**result, "tools_used":["get_team_headcount"]}
+            return {"answer":"Please clarify whether you need a policy answer, a department headcount, or an employee record lookup.","validation":"clarification_required"}
+        except PermissionError as exc:
+            raise HTTPException(403, str(exc)) from exc
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from exc
 
     @app.get("/employees/{employee_code}")
     def employee_profile(employee_code: str, x_api_key: str | None = Header(default=None), peopleops_session: str | None = Cookie(default=None)):

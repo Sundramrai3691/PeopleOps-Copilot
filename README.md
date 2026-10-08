@@ -108,6 +108,7 @@ Compose runs the API, worker, and PostgreSQL employee/job store. Local demonstra
 
 - `GET /health`
 - `POST /agent/query/policy`
+- `POST /agent/query` (deterministic routing for policy, headcount, and employee lookups)
 - `POST /agent/query/headcount`
 - `GET /employees/{employee_code}`
 - `GET /employees/{employee_code}/leave-balance`

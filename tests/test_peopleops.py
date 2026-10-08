@@ -59,4 +59,8 @@ def test_policy_and_employee_api(tmp_path, monkeypatch):
             assert (await client.get("/employees/E003", headers={"x-api-key":"employee"})).status_code == 403
             result = await client.post("/agent/query/policy", json={"question":"remote work days"}, headers={"x-api-key":"employee"})
             assert result.json()["evidence_sufficient"]
+            routed = await client.post("/agent/query", json={"question":"Check E002's leave balance"}, headers={"x-api-key":"employee"})
+            assert routed.status_code == 200 and routed.json()["tools_used"] == ["get_leave_balance"]
+            denied = await client.post("/agent/query", json={"question":"How many employees are in Engineering?"}, headers={"x-api-key":"employee"})
+            assert denied.status_code == 403
     asyncio.run(request_checks())
