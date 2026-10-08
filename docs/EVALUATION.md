@@ -21,4 +21,4 @@ Do not infer these measurements from hand-authored expected cases. Preserve fail
 
 ## Foundation artifacts
 
-Legacy SQL-agent and BIRD materials in `data/benchmarks/`, `docs/evidence/`, and related scripts describe upstream or historical research. They are not PeopleOps evaluation results and are not included in PeopleOps metrics.
+Additional benchmark and model-comparison materials in `data/benchmarks/`, `docs/evidence/`, and related scripts are separate research artifacts. They are not PeopleOps evaluation results and are not included in PeopleOps metrics.

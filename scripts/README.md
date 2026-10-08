@@ -11,7 +11,7 @@ python -m scripts.evaluation.evaluate_bird_agent --help
 | Directory | Purpose |
 | --- | --- |
 | `demo/` | Start the local product demo and run disposable smoke checks. |
-| `evaluation/` | Run PeopleOps evaluation checks and retained upstream SQL research tools. |
+| `evaluation/` | Run PeopleOps evaluation checks and optional benchmark research tools. |
 | `training/` | Prepare and score the optional local QLoRA experiment. |
 | `validation/` | Validate deployment boundaries, registered datasets, and published evidence. |
 | `maintenance/` | Regenerate documentation assets and verify public metrics. |

@@ -52,4 +52,4 @@ MCP tool schemas and calls are in `src/sql_agent/mcp_server.py`. Tool execution 
 
 ## Docker
 
-Run `docker compose up --build`. Compose configures PostgreSQL for employee data and persistent SQL-agent jobs. Replace the demonstration credentials before sharing the service.
+Run `docker compose up --build`. Compose configures PostgreSQL for employee data and persistent job state. Replace the demonstration credentials before sharing the service.

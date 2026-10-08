@@ -22,7 +22,7 @@ Audited result
 
 ## What is PeopleOps Copilot?
 
-PeopleOps Copilot is an internal operations assistant built on the repository's existing LangGraph SQL-agent architecture. It adds a synthetic employee domain, policy retrieval, MCP employee operations, role checks at the service boundary, explainability metadata, and a leave-request approval path.
+PeopleOps Copilot is an employee operations assistant for policy questions, workforce analytics, employee self-service, and manager-reviewed leave requests. It combines policy retrieval, role-aware data access, clear evidence, and auditable actions in one service.
 
 ## Problem
 
@@ -35,7 +35,7 @@ Employees and managers need answers from policy documents and workforce data wit
 - Employee profile, leave-balance, team-headcount, and attendance operations exposed as MCP tools.
 - Role-aware access for employee, manager, HR, and admin principals.
 - Leave-request proposals that validate dates and balances, pause for manager approval, then create a request and audit event.
-- Existing durable job, SQL validation, bounded-repair, and LangGraph checkpoint infrastructure remains available for registered SQL tasks.
+- Durable job processing, SQL validation, bounded recovery, and approval checkpoints support registered analytics tasks.
 
 ## Architecture and agent workflow
 
@@ -78,31 +78,19 @@ The synthetic corpus in `data/peopleops/policies.json` contains eight policy doc
 
 ## NL-to-SQL
 
-The existing architecture retains its LangGraph planner, statement validator, allowlisted database policies, execution limits, bounded recovery, verifier, and durable worker. PeopleOps headcount currently uses a fixed parameterized aggregate query and returns the SQL, referenced tables, filters, validation status, and result summary. General free-form natural-language HR-to-SQL task registration is not yet connected to the synthetic employee store.
+Registered analytics tasks use a planner, statement validation, allowlisted database policies, execution limits, bounded recovery, and a durable worker. PeopleOps headcount currently uses a fixed parameterized aggregate query and returns the SQL, referenced tables, filters, validation status, and result summary. General free-form natural-language HR-to-SQL task registration is not yet connected to the synthetic employee store.
 
 ## Evaluation
 
 `data/peopleops/evaluation.json` contains 33 HR-oriented cases across policy, analytics, follow-up, authorization, ambiguity, approvals, and adversarial inputs. The deterministic local evaluator exercised 29 cases: 29 passed, 0 failed, and 4 were not exercised (two ambiguous requests and two unsupported write types). These are fixed service-path checks, not model-quality or latency metrics.
 
-## Local setup
-
-```powershell
-py -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -e '.[api,dev]'
-$env:SQL_AGENT_API_KEYS='{"hr-local":{"name":"hr","role":"hr"},"manager-e001":{"name":"E001","role":"manager"},"employee-e002":{"name":"E002","role":"employee"}}'
-uvicorn sql_agent.api:create_app --factory --reload
-```
-
-The PeopleOps SQLite database is created at `runtime/peopleops.sqlite` on first service startup and seeded deterministically apart from current-date fields. Configure `PEOPLEOPS_DATABASE` to choose another local SQLite file, or set `PEOPLEOPS_DATABASE_URL` for PostgreSQL.
-
-## Docker setup
+## Run locally with Docker
 
 ```sh
 docker compose up --build
 ```
 
-Compose runs the API, worker, and PostgreSQL employee/job store. Local demonstration credentials are configured in `compose.yaml`; replace them before using a shared environment.
+Compose runs the API, worker, and PostgreSQL employee/job store. Local demonstration credentials are configured in `compose.yaml`; replace them before using a shared environment. For a SQLite-only developer setup, see [Usage](docs/USAGE.md).
 
 ## API
 
@@ -138,15 +126,11 @@ Headcount example:
 - “Check E002's leave balance.” (use principal `E002`)
 - “Create an annual leave request for E002 from 2026-12-10 to 2026-12-12.”
 
-## Project structure
+## Repository contents
 
-- `src/sql_agent/peopleops.py` — employee data, authorization, policy retrieval, and approval operations.
-- `src/sql_agent/api.py` — FastAPI application and PeopleOps routes.
-- `src/sql_agent/mcp_server.py` — stdio MCP boundary.
-- `src/sql_agent/database_workflow.py` — LangGraph SQL/approval checkpoint workflow.
-- `src/sql_agent/sql_validation.py` — SQL classification and read-only validation primitives.
+- `src/` — API service, employee operations, policy retrieval, and analytics workflows.
 - `data/peopleops/` — synthetic policies and evaluation cases.
-- `tests/` — existing SQL architecture tests and PeopleOps tests.
+- `tests/` — service, authorization, workflow, and API checks.
 
 ## Known limitations
 
@@ -156,10 +140,6 @@ Headcount example:
 - The evaluation file has expected cases but no scored benchmark run.
 - Seeded employees and policy text are synthetic examples, not legal or company policy.
 
-## Project foundation
-
-This derivative is based on the open-source [SQL-Agent architecture](https://github.com/jianghongcheng/SQL-Agent). PeopleOps Copilot adds an employee operations domain, synthetic data and policies, authorization boundaries, MCP operations, and approval-gated leave requests. Historical upstream evaluation artifacts remain attributable to their original project and are not presented as PeopleOps results.
-
 ## License
 
-See [LICENSE](LICENSE). Existing license and attribution notices are retained.
+See [LICENSE](LICENSE) for the license terms.
