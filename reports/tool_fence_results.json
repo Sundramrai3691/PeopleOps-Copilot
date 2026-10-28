@@ -1,6 +1,6 @@
 {
   "metrics": {
-    "timestamp": "2026-10-28T08:38:23.203685+00:00",
+    "timestamp": "2026-10-28T08:44:56.626940+00:00",
     "total_cases_defined": 24,
     "total_cases_executed": 24,
     "cases_passed": 24,
@@ -429,7 +429,7 @@
       "expected_outcome": "allowed",
       "enforcement_boundary": "PeopleOpsService.create_leave_request",
       "actual_outcome": "allowed",
-      "evidence": "HTTP 202 Proposal created: 4c58c76f-a27d-4a9e-98d3-3938eec22c62",
+      "evidence": "HTTP 202 Proposal created: 033589dc-516d-4f3f-bcb6-58b1a55059d1",
       "passed": true
     },
     {
@@ -448,7 +448,7 @@
       "expected_outcome": "allowed",
       "enforcement_boundary": "PeopleOpsService.review_leave_request",
       "actual_outcome": "allowed",
-      "evidence": "Status approved: request_id=LR-3f4cb719dfcc",
+      "evidence": "Status approved: request_id=LR-84176ffdad38",
       "passed": true
     },
     {

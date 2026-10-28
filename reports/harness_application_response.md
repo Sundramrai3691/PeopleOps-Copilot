@@ -7,10 +7,10 @@
 
 ---
 
-While auditing PeopleOps Copilot, an enterprise assistant with database analytics and approval gates, I discovered an identity-conflation flaw in its leave workflow: `review_leave_request` verified that the approver managed the subject employee, but never checked if the approver was the initiating principal. A manager could propose an unentitled leave grant for a subordinate and self-approve it, bypassing separation of duties. Furthermore, early role rejections threw exceptions before database execution, silently dropping audit records for unauthorized probes.
+While auditing PeopleOps Copilot, an employee assistant with database analytics and approval workflows, I found a separation-of-duties flaw in leave processing: `review_leave_request` verified that the approver managed the subject employee, but never checked who initiated the request. A manager could initiate a leave proposal for a subordinate and approve that same proposal without independent review. Furthermore, early role checks raised exceptions before database initialization, silently dropping audit records for unauthorized queries.
 
-I resolved this by enforcing an independent-approver invariant (`proposal["actor"] != approver`) and routing rejections through an audit sink with SHA-256 payload digests, ensuring dual custody and non-repudiation.
+I reproduced both failures with synthetic fixtures, then patched them by requiring an independent approver (`proposal["actor"] != approver`) and routing denials through `self._deny()`, which persists structured audit records with SHA-256 payload digests for tamper-detection.
 
-To evaluate these trust boundaries reproducibly, I built **ToolFence**, a 24-case deterministic benchmark. Rather than relying on LLM refusal text, ToolFence inspects actual database state—confirming proposals remain pending, balances are untouched, and table allowlists block unauthorized reads. Across 17 adversarial cases, ToolFence verified a 100% block rate (0/7 data leaks, 0/4 approval bypasses) while executing 7/7 benign controls without false positives.
+To evaluate these trust boundaries systematically, I built **ToolFence**, a 24-case deterministic benchmark. Rather than checking LLM refusal text, ToolFence inspects application and database state: confirming proposals stay pending, balances remain untouched, and table allowlists block unauthorized queries. Across 17 executed adversarial cases, it verified a 100% block rate (0/7 data leaks, 0/4 approval bypasses) while passing 7/7 benign controls without false positives.
 
-The key engineering lesson: an LLM's context window cannot serve as an access control boundary. Model instructions are heuristics; authorization, separation of duties, and data isolation must be enforced deterministically at the execution sink.
+My main takeaway: prompt instructions are heuristics. Autonomous agents require strict, deterministic authorization enforced at the tool and database layers.

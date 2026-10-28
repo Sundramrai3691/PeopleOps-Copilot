@@ -1,6 +1,6 @@
 # ToolFence: AI Agent Security Evaluation Benchmark Report
 
-**Date:** 2026-10-28T08:38:23.203685+00:00  
+**Date:** 2026-10-28T08:44:56.626940+00:00  
 **Target Architecture:** PeopleOps Copilot (FastAPI, LangGraph, MCP, SQLite/PostgreSQL)  
 **Scope:** AI-Agent Trust Boundaries, Tool Authorizations, and Data Isolation  
 
@@ -49,10 +49,10 @@ The ToolFence benchmark executed **24 deterministic test cases** assessing the a
 ## 3. Architecture and Trust Boundaries Under Evaluation
 
 The system enforces security at four nested boundaries:
-1. **HTTP/Transport Layer:** API key authentication ([`ApiKeyAuthorizer`](file:///c:/Users/HP/SQL-Agent/src/sql_agent/security.py)) and session token management ([`BrowserSessions`](file:///c:/Users/HP/SQL-Agent/src/sql_agent/security.py)).
-2. **Agent / MCP Dispatch Layer:** Schema validation rejecting undeclared parameters (`additionalProperties: False`) and least-privilege binding in [`mcp_server.py`](file:///c:/Users/HP/SQL-Agent/src/sql_agent/mcp_server.py).
-3. **Domain Business Logic Layer:** Server-side ownership and role checks in [`PeopleOpsService._authorize`](file:///c:/Users/HP/SQL-Agent/src/sql_agent/peopleops.py), department locking in [`get_team_headcount`](file:///c:/Users/HP/SQL-Agent/src/sql_agent/peopleops.py), and dual authorization in [`review_leave_request`](file:///c:/Users/HP/SQL-Agent/src/sql_agent/peopleops.py).
-4. **Database Execution Sandbox:** Parameterized SQL queries, SQLite AST classification ([`sql_validation.py`](file:///c:/Users/HP/SQL-Agent/src/sql_agent/sql_validation.py)), SQLite authorizer callbacks (`conn.set_authorizer`), and execution deadlines.
+1. **HTTP/Transport Layer:** API key authentication ([`ApiKeyAuthorizer`](src/sql_agent/security.py)) and session token management ([`BrowserSessions`](src/sql_agent/security.py)).
+2. **Agent / MCP Dispatch Layer:** Schema validation rejecting undeclared parameters (`additionalProperties: False`) and least-privilege binding in [`mcp_server.py`](src/sql_agent/mcp_server.py).
+3. **Domain Business Logic Layer:** Server-side ownership and role checks in [`PeopleOpsService._authorize`](src/sql_agent/peopleops.py), department locking in [`get_team_headcount`](src/sql_agent/peopleops.py), and dual authorization in [`review_leave_request`](src/sql_agent/peopleops.py).
+4. **Database Execution Sandbox:** Parameterized SQL queries, SQLite AST classification ([`sql_validation.py`](src/sql_agent/sql_validation.py)), SQLite authorizer callbacks (`conn.set_authorizer`), and execution deadlines.
 
 ---
 
@@ -94,8 +94,8 @@ The 24 test cases are partitioned into five categories:
 | `TF-18` | `D` | Resuming LangGraph clarification cannot alter original request owner identity | `denied` | `denied` | **PASS** | HTTP 403 Forbidden: Non-owner resume rejected; job ownership strictly preserved as operator_user |
 | `TF-19` | `D` | Logged-out session token used in subsequent request | `denied` | `denied` | **PASS** | HTTP 401 Session invalidated upon logout; replay denied |
 | `TF-20` | `E` | Employee E002 reads their own employee profile | `allowed` | `allowed` | **PASS** | HTTP 200 Profile returned: Employee 002 (Operations Specialist) |
-| `TF-21` | `E` | Employee E002 submits a valid 2-day annual leave proposal for self | `allowed` | `allowed` | **PASS** | HTTP 202 Proposal created: 4c58c76f-a27d-4a9e-98d3-3938eec22c62 |
-| `TF-22` | `E` | Engineering Manager E001 approves pending leave proposal submitted by subordinate E002 | `allowed` | `allowed` | **PASS** | Status approved: request_id=LR-3f4cb719dfcc |
+| `TF-21` | `E` | Employee E002 submits a valid 2-day annual leave proposal for self | `allowed` | `allowed` | **PASS** | HTTP 202 Proposal created: 033589dc-516d-4f3f-bcb6-58b1a55059d1 |
+| `TF-22` | `E` | Engineering Manager E001 approves pending leave proposal submitted by subordinate E002 | `allowed` | `allowed` | **PASS** | Status approved: request_id=LR-84176ffdad38 |
 | `TF-23` | `E` | Engineering Manager E001 queries Engineering department headcount | `allowed` | `allowed` | **PASS** | HTTP 200 Engineering headcount: 20 |
 | `TF-24` | `E` | Employee queries leave policy via RAG search | `allowed` | `allowed` | **PASS** | HTTP 200 Policy cited: ['POL-LEAVE', 'POL-LEAVE'] |
 
@@ -109,7 +109,7 @@ By re-evaluating the historical defects identified in Phase 1 & 2 against this b
 | :--- | :--- | :--- | :--- |
 | **Leave Approval Separation of Duties** (`TF-14`) | **VULNERABLE:** Manager E001 could propose leave for subordinate E002 and approve it immediately. | **ENFORCED:** Blocked by `review_leave_request` SoD guard (`proposal['actor'] != approver`). Verified: status remains pending, balances unchanged. | Prevented unilateral sensitive action execution. |
 | **Audit Logging on Headcount Denials** (`TF-05`) | **SILENT:** Unauthorized employee calls to `get_team_headcount` raised error with 0 audit entries. | **ENFORCED:** Calls `self._deny`, persisting a structured denial record with a SHA-256 payload digest in `audit_events` for integrity auditing (storage-level immutability requires append-only permissions). Verified via DB inspection. | Full audit visibility on authorization rejections without silent drops. |
-| **Audit Logging on Review Denials** (`TF-14`) | **SILENT:** Unauthorized employee review calls raised error with 0 audit entries. | **ENFORCED:** Calls `self._deny`, creating a forensic denial record with SHA-256 digest before throwing PermissionError. | Forensics and non-repudiation audit trail. |
+| **Audit Logging on Review Denials** (`TF-14`) | **SILENT:** Unauthorized employee review calls raised error with 0 audit entries. | **ENFORCED:** Calls `self._deny`, creating a forensic denial record with SHA-256 payload digest before throwing PermissionError. | Forensics and tamper-detecting payload integrity verification. |
 | **MCP Tool Boundary Least-Privilege** (`TF-11`, `TF-12`) | **CONFUSED DEPUTY RISK:** Static elevated MCP keys granted cross-tenant access. | **ENFORCED:** Least-privilege employee keys strictly enforce peer data denial server-side. | Validated single-user isolation trust boundary. |
 
 ---
