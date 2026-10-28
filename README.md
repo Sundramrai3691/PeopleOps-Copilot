@@ -84,6 +84,20 @@ Registered analytics tasks use a planner, statement validation, allowlisted data
 
 `data/peopleops/evaluation.json` contains 33 HR-oriented cases across policy, analytics, follow-up, authorization, ambiguity, approvals, and adversarial inputs. The deterministic local evaluator exercised 29 cases: 29 passed, 0 failed, and 4 were not exercised (two ambiguous requests and two unsupported write types). These are fixed service-path checks, not model-quality or latency metrics.
 
+### ToolFence Security Evaluation Benchmark
+
+`evals/agent_security_cases.jsonl` provides a 24-case deterministic security benchmark evaluating agent trust boundaries, direct instruction overrides, indirect prompt injection, tool permissions, multi-turn state isolation, and human-in-the-loop approvals across synthetic employee data.
+
+Run the benchmark runner:
+```sh
+python scripts/evaluation/run_tool_fence.py
+```
+Or execute the benchmark via pytest:
+```sh
+pytest tests/test_tool_fence_evaluation.py -v
+```
+Generated reports and metrics are stored in `reports/agent-security-evaluation.md` and `reports/tool_fence_results.json`.
+
 ## Run locally with Docker
 
 ```sh

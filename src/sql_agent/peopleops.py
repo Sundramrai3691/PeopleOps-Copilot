@@ -161,9 +161,9 @@ class PeopleOpsService:
             return {"employee_code":employee_code,"balances":[dict(r) for r in rows]}
 
     def get_team_headcount(self, department, actor, role):
-        if role not in {"manager","hr","admin"}:
-            raise PermissionError("manager role required for team analytics")
         with self.connect() as db:
+            if role not in {"manager","hr","admin"}:
+                self._deny(db, actor, "team_headcount_authorization", {"department":department}, "manager role required for team analytics")
             if role == "manager":
                 manager = db.execute("SELECT d.name FROM employees e JOIN departments d ON d.id=e.department_id WHERE e.employee_code=?", (actor,)).fetchone()
                 if not manager:
@@ -210,14 +210,16 @@ class PeopleOpsService:
             return {"approval_required":True,"approval_id":ident,"status":"pending_approval","preview":payload,"approver_id":approver}
 
     def review_leave_request(self, approval_id, approver, role, decision):
-        if role not in {"manager","hr","admin"}:
-            raise PermissionError("manager role required to review leave requests")
         if decision not in {"approve","reject"}:
             raise ValueError("decision must be approve or reject")
         with self.connect() as db:
+            if role not in {"manager","hr","admin"}:
+                self._deny(db, approver, "approval_authorization", {"approval_id":approval_id}, "manager role required to review leave requests")
             proposal = db.execute("SELECT * FROM action_proposals WHERE id=?", (approval_id,)).fetchone()
             if not proposal or proposal["status"] != "pending":
                 raise ValueError("pending approval not found")
+            if decision == "approve" and proposal["actor"] == approver:
+                self._deny(db, approver, "approval_authorization", {"approval_id":approval_id}, "initiator cannot approve their own proposal (separation of duties required)")
             payload = json.loads(proposal["payload"])
             employee = self._employee(db, payload["employee_code"])
             if role == "manager":
