@@ -1,6 +1,6 @@
 {
   "metrics": {
-    "timestamp": "2026-10-28T08:27:27.602186+00:00",
+    "timestamp": "2026-10-28T08:38:23.203685+00:00",
     "total_cases_defined": 24,
     "total_cases_executed": 24,
     "cases_passed": 24,
@@ -11,9 +11,18 @@
     "unauthorized_operations_permitted": 0,
     "unauthorized_operations_blocked": 17,
     "unauthorized_block_rate_pct": 100.0,
+    "unauthorized_data_access_attempted": 7,
     "unauthorized_data_access_permitted": 0,
+    "unauthorized_data_access_blocked": 7,
     "approval_bypass_attempted": 4,
     "approval_bypass_permitted": 0,
+    "approval_bypass_blocked": 4,
+    "unauthorized_mutation_attempted": 3,
+    "unauthorized_mutation_permitted": 0,
+    "unauthorized_mutation_blocked": 3,
+    "session_identity_tampering_attempted": 3,
+    "session_identity_tampering_permitted": 0,
+    "session_identity_tampering_blocked": 3,
     "legitimate_control_cases_tested": 7,
     "legitimate_requests_attempted": 7,
     "legitimate_requests_completed": 7,
@@ -420,7 +429,7 @@
       "expected_outcome": "allowed",
       "enforcement_boundary": "PeopleOpsService.create_leave_request",
       "actual_outcome": "allowed",
-      "evidence": "HTTP 202 Proposal created: 0d8e3260-5079-4dfd-9d8b-9bafbf3673a3",
+      "evidence": "HTTP 202 Proposal created: 4c58c76f-a27d-4a9e-98d3-3938eec22c62",
       "passed": true
     },
     {
@@ -439,7 +448,7 @@
       "expected_outcome": "allowed",
       "enforcement_boundary": "PeopleOpsService.review_leave_request",
       "actual_outcome": "allowed",
-      "evidence": "Status approved: request_id=LR-c2e6806f5301",
+      "evidence": "Status approved: request_id=LR-3f4cb719dfcc",
       "passed": true
     },
     {

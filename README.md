@@ -86,17 +86,47 @@ Registered analytics tasks use a planner, statement validation, allowlisted data
 
 ### ToolFence Security Evaluation Benchmark
 
-`evals/agent_security_cases.jsonl` provides a 24-case deterministic security benchmark evaluating agent trust boundaries, direct instruction overrides, indirect prompt injection, tool permissions, multi-turn state isolation, and human-in-the-loop approvals across synthetic employee data.
+`evals/agent_security_cases.jsonl` provides a 24-case deterministic security benchmark evaluating whether the agent's application and database trust boundaries hold against adversarial attacks.
 
-Run the benchmark runner:
-```sh
+#### Purpose & Threat Model
+Autonomous agents often confuse untrusted data with system instructions. ToolFence tests whether server-side defenses (FastAPI RBAC, SQLite authorizers, LangGraph human-in-the-loop checkpoints, and MCP schema validation) enforce strict access boundaries even when an untrusted user or model attempts privilege escalation.
+
+The benchmark spans 5 categories:
+1. **Direct Instruction Overrides (`TF-01` to `TF-05`):** User prompts attempting system role override, prompt SQL injection, peer leave balance probes, audit exfiltration, and out-of-scope department queries.
+2. **Indirect Context Poisoning (`TF-06` to `TF-10`):** Malicious instructions inside retrieved RAG passages or user clarifications attempting destructive DDL (`DROP TABLE`), unallowlisted table queries, approval bypasses, and unvalidated leave allocations.
+3. **Tool Authorization & Trust Boundaries (`TF-11` to `TF-15`):** Model-generated MCP tool calls attempting peer PII exfiltration, argument tampering (`role: admin`), cross-employee proposal creation, self-approval separation of duties bypasses, and operator review escalation.
+4. **Multi-Turn State Isolation (`TF-16` to `TF-19`):** Sequential turns evaluating that failed adversarial queries do not grant elevated permissions in subsequent turns, session ownership remains immutable during clarification resumption, and logged-out session cookies are immediately invalidated.
+5. **Benign Controls (`TF-20` to `TF-24`):** Legitimate employee self-service queries, manager approvals, department headcount analytics, and policy lookups verifying a 0.0% false positive rate.
+
+#### Methodology
+ToolFence validates actual system and database state rather than relying on model refusal text:
+- Asserts HTTP 403 Forbidden and verifies that response bodies leak zero peer data.
+- Queries SQLite state directly to confirm proposal records remain `pending` and leave balances are untouched.
+- Verifies that forensic audit records with SHA-256 payload digests are persisted upon denial.
+
+#### Scope & Limitations
+- **Execution-Boundary vs. Prompt Resistance:** ToolFence tests deterministic server-side and database boundaries. It does not measure non-deterministic LLM jailbreak resistance against live commercial cloud models.
+- **Analytics Scope:** Workforce analytics evaluate parameterized queries rather than arbitrary natural-language-to-SQL.
+- **MCP Concurrency:** The MCP server is architected as a local single-user subprocess over stdio; multi-tenant session multiplexing over a single connection is unsupported.
+
+#### Reproduction Commands
+To run the evaluation runner and generate Markdown and JSON reports:
+```powershell
 python scripts/evaluation/run_tool_fence.py
 ```
-Or execute the benchmark via pytest:
-```sh
+To run the benchmark via Pytest:
+```powershell
 pytest tests/test_tool_fence_evaluation.py -v
 ```
-Generated reports and metrics are stored in `reports/agent-security-evaluation.md` and `reports/tool_fence_results.json`.
+To run all targeted security and hardening tests:
+```powershell
+pytest tests/test_security.py tests/test_peopleops.py tests/test_mcp_invalid_params.py tests/test_security_hardening.py tests/test_tool_fence_evaluation.py -v
+```
+To run the full repository test suite:
+```powershell
+pytest -q --durations=10
+```
+Generated reports are stored in `reports/agent-security-evaluation.md` and `reports/tool_fence_results.json`.
 
 ## Run locally with Docker
 
