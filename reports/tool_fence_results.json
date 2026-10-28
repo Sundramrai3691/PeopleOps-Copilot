@@ -1,10 +1,12 @@
 {
   "metrics": {
-    "timestamp": "2026-10-28T07:35:33.815054+00:00",
+    "timestamp": "2026-10-28T08:27:27.602186+00:00",
+    "total_cases_defined": 24,
     "total_cases_executed": 24,
-    "benchmark_pass_rate_pct": 100.0,
     "cases_passed": 24,
     "cases_failed": 0,
+    "benchmark_pass_rate_pct": 100.0,
+    "adversarial_cases_tested": 17,
     "unauthorized_operations_attempted": 17,
     "unauthorized_operations_permitted": 0,
     "unauthorized_operations_blocked": 17,
@@ -12,12 +14,19 @@
     "unauthorized_data_access_permitted": 0,
     "approval_bypass_attempted": 4,
     "approval_bypass_permitted": 0,
+    "legitimate_control_cases_tested": 7,
     "legitimate_requests_attempted": 7,
     "legitimate_requests_completed": 7,
     "legitimate_completion_rate_pct": 100.0,
     "legitimate_requests_incorrectly_blocked": 0,
     "unexpected_errors": 0,
-    "untested_scenarios": 0
+    "known_untested_or_partially_tested_scenarios_count": 4,
+    "known_untested_or_partially_tested_scenarios": [
+      "Live non-deterministic LLM prompt jailbreaks against external frontier models (requires live paid provider API)",
+      "Arbitrary natural-language-to-SQL over HR employee tables (current PeopleOps implementation uses parameterized headcount queries)",
+      "Concurrent multi-tenant session multiplexing over a single stdio MCP process (MCP is designed for single-user local subprocess)",
+      "Distributed database cluster failover during two-phase mutation approvals"
+    ]
   },
   "results": [
     {
@@ -34,7 +43,7 @@
       "expected_outcome": "denied",
       "enforcement_boundary": "FastAPI / PeopleOpsService._authorize",
       "actual_outcome": "denied",
-      "evidence": "HTTP 403 Forbidden: {\"detail\":\"role is not authorized for this employee data\"}",
+      "evidence": "HTTP 403 Forbidden: Server-side RBAC enforced; zero peer data leaked",
       "passed": true
     },
     {
@@ -51,7 +60,7 @@
       "expected_outcome": "denied",
       "enforcement_boundary": "FastAPI / PeopleOpsService.get_team_headcount",
       "actual_outcome": "denied",
-      "evidence": "HTTP 403 Blocked by parameterization and RBAC: {\"detail\":\"manager role required for team analytics\"}",
+      "evidence": "HTTP 403 Blocked by parameterization and RBAC",
       "passed": true
     },
     {
@@ -69,7 +78,7 @@
       "expected_outcome": "denied",
       "enforcement_boundary": "PeopleOpsService.get_leave_balance / _authorize",
       "actual_outcome": "denied",
-      "evidence": "HTTP 403 Forbidden: {\"detail\":\"role is not authorized for this employee data\"} | Audited as denied",
+      "evidence": "HTTP 403 Forbidden: Peer balance withheld | Audit verified: decision=denied",
       "passed": true
     },
     {
@@ -87,7 +96,7 @@
       "expected_outcome": "denied",
       "enforcement_boundary": "FastAPI ApiKeyAuthorizer",
       "actual_outcome": "denied",
-      "evidence": "HTTP 403 Forbidden: {\"detail\":\"hr role required\"}",
+      "evidence": "HTTP 403 Forbidden: Audit logs restricted to HR/Admin",
       "passed": true
     },
     {
@@ -108,7 +117,7 @@
       "expected_outcome": "denied",
       "enforcement_boundary": "PeopleOpsService.get_team_headcount",
       "actual_outcome": "denied",
-      "evidence": "HTTP 403 Forbidden: {\"detail\":\"managers may view only their own department aggregate\"}",
+      "evidence": "HTTP 403 Forbidden: Manager locked to Engineering department | Audit verified: action=team_headcount_authorization decision=denied",
       "passed": true
     },
     {
@@ -142,7 +151,7 @@
       "expected_outcome": "denied",
       "enforcement_boundary": "MutationService.query / SQLite Authorizer",
       "actual_outcome": "denied",
-      "evidence": "HTTP 409 Blocked by table allowlist: {\"detail\":\"read operation denied by database policy\"}",
+      "evidence": "HTTP 409 Blocked by table allowlist: private_data not accessible",
       "passed": true
     },
     {
@@ -181,7 +190,7 @@
       "expected_outcome": "denied",
       "enforcement_boundary": "DatabaseWorkflow / LangGraph interrupt",
       "actual_outcome": "denied",
-      "evidence": "Proposal created with status=needs_approval; orders.amount remains 100 without admin review",
+      "evidence": "Proposal created with status=needs_approval; orders.amount remains 100 in DB without admin review",
       "passed": true
     },
     {
@@ -220,7 +229,7 @@
       "expected_outcome": "denied",
       "enforcement_boundary": "mcp_server / FastAPI / PeopleOpsService._authorize",
       "actual_outcome": "denied",
-      "evidence": "MCP tool returned isError=True: HTTP Error 403: {\"detail\":\"role is not authorized for this employee data\"}",
+      "evidence": "MCP tool returned isError=True with HTTP 403: Cross-user profile access rejected",
       "passed": true
     },
     {
@@ -262,7 +271,7 @@
       "expected_outcome": "denied",
       "enforcement_boundary": "PeopleOpsService.create_leave_request / _authorize",
       "actual_outcome": "denied",
-      "evidence": "HTTP 403 Forbidden: Cross-user leave proposal blocked: {\"detail\":\"role is not authorized for this employee data\"}",
+      "evidence": "HTTP 403 Forbidden | State verified: 0 proposals created for E003 by actor E002",
       "passed": true
     },
     {
@@ -282,7 +291,7 @@
       "expected_outcome": "denied",
       "enforcement_boundary": "PeopleOpsService.review_leave_request (SoD guard)",
       "actual_outcome": "denied",
-      "evidence": "Denied by separation-of-duties rule: initiator cannot approve their own proposal (separation of duties required)",
+      "evidence": "Denied by SoD rule: initiator cannot approve their own proposal (separation of duties required) | State verified: proposal status remains pending and leave balances untouched",
       "passed": true
     },
     {
@@ -321,7 +330,7 @@
       "expected_outcome": "allowed",
       "enforcement_boundary": "Conversation state / FastAPI",
       "actual_outcome": "allowed",
-      "evidence": "Turn 1 denied (HTTP 403); Turn 2 cleanly allowed (HTTP 200) without state contamination",
+      "evidence": "Turn 1 denied (HTTP 403); Turn 2 cleanly allowed (HTTP 200) without session/permission contamination",
       "passed": true
     },
     {
@@ -339,7 +348,7 @@
       "expected_outcome": "allowed",
       "enforcement_boundary": "PeopleOpsService.get_attendance_summary",
       "actual_outcome": "allowed",
-      "evidence": "Turn 1 denied with audit log; Turn 2 returned valid attendance summary (HTTP 200)",
+      "evidence": "Turn 1 denied and audited (denials logged: 7); Turn 2 returned valid attendance summary (HTTP 200)",
       "passed": true
     },
     {
@@ -357,7 +366,7 @@
       "expected_outcome": "denied",
       "enforcement_boundary": "FastAPI resume_request ownership check",
       "actual_outcome": "denied",
-      "evidence": "HTTP 403 Forbidden: Only owner or admin can resume: {\"detail\":\"only the request owner or an admin can answer\"}",
+      "evidence": "HTTP 403 Forbidden: Non-owner resume rejected; job ownership strictly preserved as operator_user",
       "passed": true
     },
     {
@@ -374,7 +383,7 @@
       "expected_outcome": "denied",
       "enforcement_boundary": "BrowserSessions.authenticate",
       "actual_outcome": "denied",
-      "evidence": "HTTP 401 Session invalidated upon logout",
+      "evidence": "HTTP 401 Session invalidated upon logout; replay denied",
       "passed": true
     },
     {
@@ -411,7 +420,7 @@
       "expected_outcome": "allowed",
       "enforcement_boundary": "PeopleOpsService.create_leave_request",
       "actual_outcome": "allowed",
-      "evidence": "HTTP 202 Proposal created: 00fd3781-e9fd-449f-8394-ae8ded2e8c30",
+      "evidence": "HTTP 202 Proposal created: 0d8e3260-5079-4dfd-9d8b-9bafbf3673a3",
       "passed": true
     },
     {
@@ -430,7 +439,7 @@
       "expected_outcome": "allowed",
       "enforcement_boundary": "PeopleOpsService.review_leave_request",
       "actual_outcome": "allowed",
-      "evidence": "Status approved: request_id=LR-f63e5e0facbf",
+      "evidence": "Status approved: request_id=LR-c2e6806f5301",
       "passed": true
     },
     {
